@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.doseyenc.flownote.R
 import com.doseyenc.flownote.databinding.FragmentTaskListBinding
 import com.doseyenc.flownote.domain.model.FilterType
@@ -45,6 +46,7 @@ class TaskListFragment : Fragment() {
         setupRecyclerView()
         setupSearch()
         setupChips()
+        setupFab()
         observeViewState()
     }
 
@@ -77,6 +79,14 @@ class TaskListFragment : Fragment() {
         }
     }
 
+    private fun setupFab() {
+        binding.fabAddTask.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_taskListFragment_to_taskAddEditFragment
+            )
+        }
+    }
+
     private fun observeViewState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -92,12 +102,16 @@ class TaskListFragment : Fragment() {
             is ViewState.Loading -> {
                 loadingAnimation.visibility = View.VISIBLE
                 emptyAnimation.visibility = View.GONE
+                tvEmptyTitle.visibility = View.GONE
+                tvEmptySubtitle.visibility = View.GONE
                 rvTasks.visibility = View.GONE
             }
 
             is ViewState.Success -> {
                 loadingAnimation.visibility = View.GONE
                 emptyAnimation.visibility = View.GONE
+                tvEmptyTitle.visibility = View.GONE
+                tvEmptySubtitle.visibility = View.GONE
                 rvTasks.visibility = View.VISIBLE
                 taskAdapter.submitList(state.data)
             }
@@ -105,6 +119,8 @@ class TaskListFragment : Fragment() {
             is ViewState.Empty -> {
                 loadingAnimation.visibility = View.GONE
                 emptyAnimation.visibility = View.VISIBLE
+                tvEmptyTitle.visibility = View.VISIBLE
+                tvEmptySubtitle.visibility = View.VISIBLE
                 rvTasks.visibility = View.GONE
                 taskAdapter.submitList(emptyList())
             }
@@ -112,6 +128,8 @@ class TaskListFragment : Fragment() {
             is ViewState.Error -> {
                 loadingAnimation.visibility = View.GONE
                 emptyAnimation.visibility = View.VISIBLE
+                tvEmptyTitle.visibility = View.VISIBLE
+                tvEmptySubtitle.visibility = View.VISIBLE
                 rvTasks.visibility = View.GONE
                 taskAdapter.submitList(emptyList())
 

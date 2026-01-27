@@ -1,0 +1,108 @@
+package com.doseyenc.flownote.presentation.ui.taskaddedit
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.doseyenc.flownote.databinding.FragmentTaskAddEditBinding
+import com.doseyenc.flownote.presentation.viewstate.ViewState
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+
+@AndroidEntryPoint
+class TaskAddEditFragment : Fragment() {
+
+    private var _binding: FragmentTaskAddEditBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: TaskAddEditViewModel by viewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentTaskAddEditBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        setupTextListeners()
+        observeFields()
+        observeViewState()
+    }
+
+    private fun setupTextListeners() {
+        binding.etTitle.addTextChangedListener { text ->
+            viewModel.onTitleChanged(text?.toString().orEmpty())
+        }
+
+        binding.etDescription.addTextChangedListener { text ->
+            viewModel.onDescriptionChanged(text?.toString().orEmpty())
+        }
+    }
+
+    private fun observeFields() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                with(binding) {
+                    launch {
+                        viewModel.title.collect { title ->
+                            if (etTitle.text?.toString() != title) {
+                                etTitle.setText(title)
+                                etTitle.setSelection(title.length)
+                            }
+                        }
+                    }
+                    launch {
+                        viewModel.description.collect { description ->
+                            if (etDescription.text?.toString() != description) {
+                                etDescription.setText(description)
+                                etDescription.setSelection(description.length)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeViewState() {
+        var wasSaving = false
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    combine(
+                        viewModel.isSaving,
+                        viewModel.viewState
+                    ) { isSaving, viewState ->
+                        if (wasSaving && !isSaving && viewState is ViewState.Success) {
+                            findNavController().popBackStack()
+                        }
+                        wasSaving = isSaving
+                    }.collect { }
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
