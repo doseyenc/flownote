@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="task"
+            type="com.doseyenc.flownote.domain.model.Task" />
+
+        <variable
+            name="viewModel"
+            type="com.doseyenc.flownote.presentation.ui.tasklist.TaskListViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardElevation="2dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/outline"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.onTaskClicked(task)}"
+            android:padding="@dimen/spacing_m">
+
+            <CheckBox
+                android:id="@+id/cbCompleted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/primary"
+                android:checked="@{task.isCompleted}"
+                android:onCheckedChanged="@{(button, isChecked) -> viewModel.onTaskCheckedChanged(task, isChecked)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:text="@{task.title}"
+                android:textColor="@color/on_surface"
+                android:textSize="@dimen/text_l"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cbCompleted"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Task title" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@{task.description}"
+                android:textColor="@color/outline"
+                android:textSize="@dimen/text_m"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cbCompleted"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                tools:text="Task description" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
+

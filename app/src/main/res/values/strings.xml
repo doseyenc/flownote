@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">FlowNote</string>
+    <string name="search_hint">Search tasks</string>
+    <string name="filter_all">All</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_completed">Completed</string>
+    <string name="add_task">Add task</string>
+    <string name="empty_tasks_title">No tasks yet</string>
+    <string name="empty_tasks_subtitle">Start by adding your first note or task.</string>
+    <string name="error_generic">Something went wrong</string>
 </resources>
