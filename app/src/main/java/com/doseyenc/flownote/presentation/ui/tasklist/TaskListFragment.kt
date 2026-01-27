@@ -48,6 +48,7 @@ class TaskListFragment : Fragment() {
         setupChips()
         setupFab()
         observeViewState()
+        observeTaskSelection()
     }
 
     private fun setupBinding() {
@@ -92,6 +93,23 @@ class TaskListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect { state ->
                     renderState(state)
+                }
+            }
+        }
+    }
+
+    private fun observeTaskSelection() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedTaskId.collect { taskId ->
+                    taskId?.let {
+                        findNavController().navigate(
+                            TaskListFragmentDirections.actionTaskListFragmentToTaskAddEditFragment(
+                                taskId = it
+                            )
+                        )
+                        viewModel.onTaskSelectionHandled()
+                    }
                 }
             }
         }

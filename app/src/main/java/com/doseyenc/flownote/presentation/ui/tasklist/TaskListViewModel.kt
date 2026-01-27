@@ -38,6 +38,9 @@ class TaskListViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<ViewState<List<Task>>>(ViewState.Loading)
     val viewState: StateFlow<ViewState<List<Task>>> = _viewState.asStateFlow()
 
+    private val _selectedTaskId = MutableStateFlow<Long?>(null)
+    val selectedTaskId: StateFlow<Long?> = _selectedTaskId.asStateFlow()
+
     init {
         observeTasks()
     }
@@ -112,7 +115,11 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    // TODO: Navigate to detail
     fun onTaskClicked(task: Task) {
+        _selectedTaskId.value = task.id
+    }
+
+    fun onTaskSelectionHandled() {
+        _selectedTaskId.value = null
     }
 }

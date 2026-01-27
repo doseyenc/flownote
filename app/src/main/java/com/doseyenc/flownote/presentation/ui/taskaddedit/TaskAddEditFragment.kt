@@ -58,17 +58,19 @@ class TaskAddEditFragment : Fragment() {
     private fun observeFields() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                with(binding) {
-                    launch {
-                        viewModel.title.collect { title ->
+                launch {
+                    viewModel.title.collect { title ->
+                        with(binding) {
                             if (etTitle.text?.toString() != title) {
                                 etTitle.setText(title)
                                 etTitle.setSelection(title.length)
                             }
                         }
                     }
-                    launch {
-                        viewModel.description.collect { description ->
+                }
+                launch {
+                    viewModel.description.collect { description ->
+                        with(binding) {
                             if (etDescription.text?.toString() != description) {
                                 etDescription.setText(description)
                                 etDescription.setSelection(description.length)
