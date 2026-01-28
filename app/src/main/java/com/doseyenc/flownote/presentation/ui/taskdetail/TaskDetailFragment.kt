@@ -52,35 +52,31 @@ class TaskDetailFragment : Fragment() {
     }
 
     private fun observeViewState() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.viewState.collect { state ->
-                        renderState(state)
-                    }
+                viewModel.viewState.collect { state ->
+                    renderState(state)
                 }
             }
         }
     }
 
     private fun observeEvents() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            is TaskDetailEvent.Edit -> {
-                                findNavController().navigate(
-                                    TaskDetailFragmentDirections
-                                        .actionTaskDetailFragmentToTaskAddEditFragment(
-                                            taskId = event.taskId
-                                        )
-                                )
-                            }
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is TaskDetailEvent.Edit -> {
+                            findNavController().navigate(
+                                TaskDetailFragmentDirections
+                                    .actionTaskDetailFragmentToTaskAddEditFragment(
+                                        taskId = event.taskId
+                                    )
+                            )
+                        }
 
-                            is TaskDetailEvent.Deleted -> {
-                                findNavController().popBackStack()
-                            }
+                        is TaskDetailEvent.Deleted -> {
+                            findNavController().popBackStack()
                         }
                     }
                 }

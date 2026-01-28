@@ -60,15 +60,13 @@ class TaskAddEditFragment : Fragment() {
     }
 
     private fun observeTitleError() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.titleError.collect { hasError ->
-                        binding.titleInputLayout.error = if (hasError) {
-                            getString(R.string.error_title_blank)
-                        } else {
-                            null
-                        }
+                viewModel.titleError.collect { hasError ->
+                    binding.titleInputLayout.error = if (hasError) {
+                        getString(R.string.error_title_blank)
+                    } else {
+                        null
                     }
                 }
             }
@@ -78,19 +76,17 @@ class TaskAddEditFragment : Fragment() {
     private fun observeViewState() {
         var wasSaving = false
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    combine(
-                        viewModel.isSaving,
-                        viewModel.viewState
-                    ) { isSaving, viewState ->
-                        if (wasSaving && !isSaving && viewState is ViewState.Success) {
-                            findNavController().popBackStack()
-                        }
-                        wasSaving = isSaving
-                    }.collect { }
-                }
+                combine(
+                    viewModel.isSaving,
+                    viewModel.viewState
+                ) { isSaving, viewState ->
+                    if (wasSaving && !isSaving && viewState is ViewState.Success) {
+                        findNavController().popBackStack()
+                    }
+                    wasSaving = isSaving
+                }.collect { }
             }
         }
     }
