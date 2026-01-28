@@ -17,7 +17,7 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     fun getTaskById(id: Long): Flow<TaskEntity?>
 
-    @Query("SELECT * FROM tasks WHERE title LIKE '%' || :query || '%' ORDER BY created_at DESC")
+    @Query("SELECT * FROM tasks WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%' ORDER BY created_at DESC")
     fun searchTasks(query: String): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE is_completed = 1 ORDER BY created_at DESC")

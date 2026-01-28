@@ -5,9 +5,17 @@
     <string name="filter_active">Active</string>
     <string name="filter_completed">Completed</string>
     <string name="add_task">Add task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="save">Save</string>
     <string name="empty_tasks_title">No tasks yet</string>
     <string name="empty_tasks_subtitle">Start by adding your first note or task.</string>
     <string name="error_generic">Something went wrong</string>
     <string name="task_title_hint">Task title</string>
     <string name="task_description_hint">Details, notes, or steps…</string>
+    <string name="error_title_blank">Title cannot be blank</string>
+    <string name="task_detail">Task Detail</string>
+    <string name="task_completed">Completed</string>
+    <string name="task_no_description">No description</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

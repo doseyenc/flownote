@@ -104,7 +104,7 @@ class TaskListFragment : Fragment() {
                 viewModel.selectedTaskId.collect { taskId ->
                     taskId?.let {
                         findNavController().navigate(
-                            TaskListFragmentDirections.actionTaskListFragmentToTaskAddEditFragment(
+                            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailFragment(
                                 taskId = it
                             )
                         )

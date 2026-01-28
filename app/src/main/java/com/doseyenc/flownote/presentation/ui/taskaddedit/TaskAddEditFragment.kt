@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.doseyenc.flownote.R
 import com.doseyenc.flownote.databinding.FragmentTaskAddEditBinding
 import com.doseyenc.flownote.presentation.viewstate.ViewState
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,9 +41,25 @@ class TaskAddEditFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        setupToolbar()
         setupTextListeners()
         observeFields()
+        observeTitleError()
         observeViewState()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        if (viewModel.isEditMode) {
+            binding.toolbar.title = getString(R.string.edit_task)
+            binding.btnSave.text = getString(R.string.save)
+        } else {
+            binding.toolbar.title = getString(R.string.add_task)
+            binding.btnSave.text = getString(R.string.add_task)
+        }
     }
 
     private fun setupTextListeners() {
@@ -75,6 +92,22 @@ class TaskAddEditFragment : Fragment() {
                                 etDescription.setText(description)
                                 etDescription.setSelection(description.length)
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeTitleError() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.titleError.collect { hasError ->
+                        binding.titleInputLayout.error = if (hasError) {
+                            getString(R.string.error_title_blank)
+                        } else {
+                            null
                         }
                     }
                 }

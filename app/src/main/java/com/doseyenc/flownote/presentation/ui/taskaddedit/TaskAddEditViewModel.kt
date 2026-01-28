@@ -32,11 +32,17 @@ class TaskAddEditViewModel @Inject constructor(
     private val _description = MutableStateFlow("")
     val description: StateFlow<String> = _description.asStateFlow()
 
+    private val _titleError = MutableStateFlow(false)
+    val titleError: StateFlow<Boolean> = _titleError.asStateFlow()
+
     private val _viewState = MutableStateFlow<ViewState<Unit>>(ViewState.Empty)
     val viewState: StateFlow<ViewState<Unit>> = _viewState.asStateFlow()
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    val isEditMode: Boolean
+        get() = taskId != -1L
 
     init {
         if (taskId != -1L) {
@@ -61,6 +67,9 @@ class TaskAddEditViewModel @Inject constructor(
 
     fun onTitleChanged(value: String) {
         _title.value = value
+        if (_titleError.value) {
+            _titleError.value = false
+        }
     }
 
     fun onDescriptionChanged(value: String) {
@@ -72,7 +81,7 @@ class TaskAddEditViewModel @Inject constructor(
         val currentDescription = description.value
 
         if (currentTitle.isBlank()) {
-            _viewState.value = ViewState.Error("Title cannot be blank")
+            _titleError.value = true
             return
         }
 
