@@ -10,8 +10,11 @@ import com.doseyenc.flownote.domain.usecase.GetTaskByIdUseCase
 import com.doseyenc.flownote.domain.usecase.UpdateTaskUseCase
 import com.doseyenc.flownote.presentation.viewstate.ViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -38,6 +41,9 @@ class TaskAddEditViewModel @Inject constructor(
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    private val _saveSuccessEvents = MutableSharedFlow<Unit>()
+    val saveSuccessEvents: SharedFlow<Unit> = _saveSuccessEvents.asSharedFlow()
 
     val isEditMode: Boolean
         get() = taskId != -1L
@@ -98,6 +104,7 @@ class TaskAddEditViewModel @Inject constructor(
                 onSuccess = {
                     _viewState.value = ViewState.Success(Unit)
                     _isSaving.value = false
+                    _saveSuccessEvents.emit(Unit)
                 },
                 onFailure = { exception ->
                     _viewState.value = ViewState.Error(

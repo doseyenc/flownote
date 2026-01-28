@@ -12,9 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.doseyenc.flownote.R
 import com.doseyenc.flownote.databinding.FragmentTaskAddEditBinding
-import com.doseyenc.flownote.presentation.viewstate.ViewState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -42,7 +40,7 @@ class TaskAddEditFragment : Fragment() {
 
         setupToolbar()
         observeTitleError()
-        observeViewState()
+        observeEvents()
     }
 
     private fun setupToolbar() {
@@ -73,20 +71,12 @@ class TaskAddEditFragment : Fragment() {
         }
     }
 
-    private fun observeViewState() {
-        var wasSaving = false
-
+    private fun observeEvents() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(
-                    viewModel.isSaving,
-                    viewModel.viewState
-                ) { isSaving, viewState ->
-                    if (wasSaving && !isSaving && viewState is ViewState.Success) {
-                        findNavController().popBackStack()
-                    }
-                    wasSaving = isSaving
-                }.collect { }
+                viewModel.saveSuccessEvents.collect {
+                    findNavController().popBackStack()
+                }
             }
         }
     }
