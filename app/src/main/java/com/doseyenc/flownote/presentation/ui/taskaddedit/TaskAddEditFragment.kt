@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -42,8 +41,6 @@ class TaskAddEditFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         setupToolbar()
-        setupTextListeners()
-        observeFields()
         observeTitleError()
         observeViewState()
     }
@@ -59,43 +56,6 @@ class TaskAddEditFragment : Fragment() {
         } else {
             binding.toolbar.title = getString(R.string.add_task)
             binding.btnSave.text = getString(R.string.add_task)
-        }
-    }
-
-    private fun setupTextListeners() {
-        binding.etTitle.addTextChangedListener { text ->
-            viewModel.onTitleChanged(text?.toString().orEmpty())
-        }
-
-        binding.etDescription.addTextChangedListener { text ->
-            viewModel.onDescriptionChanged(text?.toString().orEmpty())
-        }
-    }
-
-    private fun observeFields() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.title.collect { title ->
-                        with(binding) {
-                            if (etTitle.text?.toString() != title) {
-                                etTitle.setText(title)
-                                etTitle.setSelection(title.length)
-                            }
-                        }
-                    }
-                }
-                launch {
-                    viewModel.description.collect { description ->
-                        with(binding) {
-                            if (etDescription.text?.toString() != description) {
-                                etDescription.setText(description)
-                                etDescription.setSelection(description.length)
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

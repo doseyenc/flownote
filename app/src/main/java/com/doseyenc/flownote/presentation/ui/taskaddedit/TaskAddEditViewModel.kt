@@ -1,5 +1,6 @@
 package com.doseyenc.flownote.presentation.ui.taskaddedit
 
+import androidx.databinding.ObservableField
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,11 +27,8 @@ class TaskAddEditViewModel @Inject constructor(
 
     private val taskId: Long = savedStateHandle.get<Long>("taskId") ?: -1L
 
-    private val _title = MutableStateFlow("")
-    val title: StateFlow<String> = _title.asStateFlow()
-
-    private val _description = MutableStateFlow("")
-    val description: StateFlow<String> = _description.asStateFlow()
+    val title = ObservableField("")
+    val description = ObservableField("")
 
     private val _titleError = MutableStateFlow(false)
     val titleError: StateFlow<Boolean> = _titleError.asStateFlow()
@@ -57,8 +55,8 @@ class TaskAddEditViewModel @Inject constructor(
                 if (task == null) {
                     _viewState.value = ViewState.Error("Task not found")
                 } else {
-                    _title.value = task.title
-                    _description.value = task.description
+                    title.set(task.title)
+                    description.set(task.description)
                     _viewState.value = ViewState.Success(Unit)
                 }
             }
@@ -66,19 +64,14 @@ class TaskAddEditViewModel @Inject constructor(
     }
 
     fun onTitleChanged(value: String) {
-        _title.value = value
-        if (_titleError.value) {
+        if (_titleError.value && value.isNotBlank()) {
             _titleError.value = false
         }
     }
 
-    fun onDescriptionChanged(value: String) {
-        _description.value = value
-    }
-
     fun onSaveClicked() {
-        val currentTitle = title.value
-        val currentDescription = description.value
+        val currentTitle = title.get().orEmpty()
+        val currentDescription = description.get().orEmpty()
 
         if (currentTitle.isBlank()) {
             _titleError.value = true
