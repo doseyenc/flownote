@@ -39,9 +39,6 @@ class TaskAddEditViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<ViewState<Unit>>(ViewState.Empty)
     val viewState: StateFlow<ViewState<Unit>> = _viewState.asStateFlow()
 
-    private val _isSaving = MutableStateFlow(false)
-    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
-
     private val _saveSuccessEvents = MutableSharedFlow<Unit>()
     val saveSuccessEvents: SharedFlow<Unit> = _saveSuccessEvents.asSharedFlow()
 
@@ -85,7 +82,6 @@ class TaskAddEditViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _isSaving.value = true
             _viewState.value = ViewState.Loading
 
             val task = Task(
@@ -103,7 +99,6 @@ class TaskAddEditViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     _viewState.value = ViewState.Success(Unit)
-                    _isSaving.value = false
                     _saveSuccessEvents.emit(Unit)
                 },
                 onFailure = { exception ->
@@ -111,7 +106,6 @@ class TaskAddEditViewModel @Inject constructor(
                         message = exception.message ?: "Failed to save task",
                         throwable = exception
                     )
-                    _isSaving.value = false
                 }
             )
         }
