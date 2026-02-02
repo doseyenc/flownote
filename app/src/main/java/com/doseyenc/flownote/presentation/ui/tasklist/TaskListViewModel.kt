@@ -100,21 +100,6 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteTask(task: Task) {
-        viewModelScope.launch {
-            val result = deleteTaskUseCase(task)
-            result.fold(
-                onSuccess = { /* Task deleted successfully */ },
-                onFailure = { exception ->
-                    _viewState.value = ViewState.Error(
-                        message = exception.message ?: "Failed to delete task",
-                        throwable = exception
-                    )
-                }
-            )
-        }
-    }
-
     fun onTaskClicked(task: Task) {
         _selectedTaskId.value = task.id
     }
